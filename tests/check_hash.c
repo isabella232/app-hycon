@@ -1,4 +1,4 @@
-#include <check.h>
+//#include <check.h>
 #include <math.h>
 
 #include "../src/hycon_api.h"
@@ -31,7 +31,7 @@ START_TEST(test_blake2b_small)
 	blake2b(hash_tx, sizeof(hash_tx), encoded_tx,
 		sizeof(encoded_tx), &G_blake2b_state, 0);
 
-	size_t i = 0;
+	uint8_t i = 0;
 	for (i = 0; i < sizeof(hash_tx); i++) {
 		ck_assert_int_eq(hash_tx[i], expected_hash_tx[i]);
 	}
@@ -57,7 +57,7 @@ START_TEST(test_blake2b_medium)
 	blake2b(hash_tx, sizeof(hash_tx), encoded_tx,
 		sizeof(encoded_tx), &G_blake2b_state, 0);
 
-	size_t i = 0;
+	uint8_t i = 0;
 	for (i = 0; i < sizeof(hash_tx); i++) {
 		ck_assert_int_eq(hash_tx[i], expected_hash_tx[i]);
 	}
@@ -84,7 +84,7 @@ START_TEST(test_blake2b_large)
 	blake2b(hash_tx, sizeof(hash_tx), encoded_tx,
 		sizeof(encoded_tx), &G_blake2b_state, 0);
 
-	size_t i = 0;
+	uint8_t i = 0;
 	for (i = 0; i < sizeof(hash_tx); i++) {
 		ck_assert_int_eq(hash_tx[i], expected_hash_tx[i]);
 	}

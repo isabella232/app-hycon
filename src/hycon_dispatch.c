@@ -116,7 +116,7 @@ void handle_sign(uint8_t p1, uint8_t p2, uint8_t *data_buffer,
 	{
 		// UI variables setting
 		uint8_t ticker_offset = 0;
-		while (HYC_TICKER[ticker_offset]) {
+		while (HYC_TICKER[ticker_offset] && ticker_offset < sizeof(HYC_TICKER)) {
 			G_ram.ui_amount[ticker_offset] = HYC_TICKER[ticker_offset];
 			ticker_offset++;
 		}
@@ -124,7 +124,7 @@ void handle_sign(uint8_t p1, uint8_t p2, uint8_t *data_buffer,
 			G_ram.ui_amount + ticker_offset);
 
 		ticker_offset = 0;
-		while (HYC_TICKER[ticker_offset]) {
+		while (HYC_TICKER[ticker_offset] && ticker_offset < sizeof(HYC_TICKER)) {
 			G_ram.ui_fee[ticker_offset] = HYC_TICKER[ticker_offset];
 			ticker_offset++;
 		}

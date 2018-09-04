@@ -65,11 +65,11 @@ START_TEST(test_decode_varint_small)
 	uint64_t decoded_amount;
 
 	uint8_t encoded_amount_small[] = {0x90, 0x4e};
-	decoded_amount = decode_varint(encoded_amount_small, &skip_bytes);
+	decoded_amount = decode_varint(encoded_amount_small, &skip_bytes, sizeof(encoded_amount_small));
 	ck_assert_int_eq(decoded_amount, 10000);
 
 	uint8_t encoded_amount_medium[] = {0x95, 0xbe, 0xc3, 0x8b, 0xa8, 0xee, 0x67};
-	decoded_amount = decode_varint(encoded_amount_medium, &skip_bytes);
+	decoded_amount = decode_varint(encoded_amount_medium, &skip_bytes, sizeof(encoded_amount_medium));
 	ck_assert_int_eq(decoded_amount, 456789123456789);
 }
 END_TEST
@@ -80,7 +80,7 @@ START_TEST(test_decode_varint_medium)
 	uint64_t decoded_amount;
 
 	uint8_t encoded_amount_medium[] = {0x95, 0xbe, 0xc3, 0x8b, 0xa8, 0xee, 0x67};
-	decoded_amount = decode_varint(encoded_amount_medium, &skip_bytes);
+	decoded_amount = decode_varint(encoded_amount_medium, &skip_bytes, sizeof(encoded_amount_medium));
 	ck_assert_int_eq(decoded_amount, 456789123456789);
 }
 END_TEST
@@ -92,7 +92,7 @@ START_TEST(test_decode_varint_large)
 
 	uint8_t encoded_amount_medium[] = {0x95, 0xbe, 0xc1, 0xe6, 0xba,
 	                                   0xe9, 0xa6, 0xdb, 0x01};
-	decoded_amount = decode_varint(encoded_amount_medium, &skip_bytes);
+	decoded_amount = decode_varint(encoded_amount_medium, &skip_bytes, sizeof(encoded_amount_medium));
 	ck_assert_int_eq(decoded_amount, 123456789123456789);
 }
 END_TEST

@@ -55,7 +55,7 @@ uint32_t set_result_public_key() {
 	tx += 20;
 
 	char string_address[50];
-	size_t len = bin_addr_to_hycon_address(hex_address, string_address);
+	uint8_t len = bin_addr_to_hycon_address(hex_address, string_address);
 	G_io_apdu_buffer[tx++] = len;
 	os_memmove(G_io_apdu_buffer + tx, string_address, len);
 	tx += len;
@@ -70,7 +70,7 @@ uint32_t set_result_public_key() {
 void coin_amount_to_displayable_chars(uint64_t number, char *out) {
 	int zero_count = 0;
 	char tmp[22];
-	size_t i = 0;
+	uint8_t i = 0;
 	bool show_decimal_point = false;
 
 	while ((number%10 == 0) && (zero_count < HYC_TO_MINIMUM_AMOUNT)) {
@@ -101,7 +101,7 @@ void coin_amount_to_displayable_chars(uint64_t number, char *out) {
 	} while (number /= 10);
 
 	// reverse array
-	size_t j = 0;
+	uint8_t j = 0;
 	while (i--) {
 		out[j] = tmp[i];
 		j++;
@@ -111,9 +111,9 @@ void coin_amount_to_displayable_chars(uint64_t number, char *out) {
 }
 
 // Uses protobuf rules to decode
-bool decode_tx(const uint8_t *data, size_t data_len, hycon_tx *tx_content) {
-	size_t idx = 0;
-	size_t len, i;
+bool decode_tx(const uint8_t *data, uint8_t data_len, hycon_tx *tx_content) {
+	uint8_t idx = 0;
+	uint8_t len, i;
 	uint8_t skip_bytes;
 
 	while (idx < data_len) {
@@ -142,13 +142,13 @@ bool decode_tx(const uint8_t *data, size_t data_len, hycon_tx *tx_content) {
 		case 3:	// amount
 			if ((data[idx] & 0x7) != 0) return false;	// type doesn't match
 			idx++;
-			tx_content->amount = decode_varint(&data[idx], &skip_bytes);
+			tx_content->amount = decode_varint(&data[idx], &skip_bytes, data_len - idx);
 			idx += skip_bytes;
 			break;
 		case 4:	// fee
 			if ((data[idx] & 0x7) != 0) return false;	// type doesn't match
 			idx++;
-			tx_content->fee = decode_varint(&data[idx], &skip_bytes);
+			tx_content->fee = decode_varint(&data[idx], &skip_bytes, data_len - idx);
 			idx += skip_bytes;
 			break;
 		default:	// ignore other fields
@@ -159,31 +159,36 @@ bool decode_tx(const uint8_t *data, size_t data_len, hycon_tx *tx_content) {
 	return true;
 }
 
-size_t bin_addr_to_hycon_address(const uint8_t addr[21], char* out) {
+uint8_t bin_addr_to_hycon_address(const uint8_t addr[21], char* out) {
 	out[0] = 'H';
-	size_t encode_len = base58_encode(&out[1], addr, 20);
-	size_t check_sum_len = check_sum(&out[encode_len+1], addr, 20);
+	uint8_t encode_len = base58_encode(&out[1], addr, 20);
+	uint8_t check_sum_len = check_sum(&out[encode_len+1], addr, 20);
 	out[encode_len + check_sum_len + 1] = '\0';
 
 	return encode_len + check_sum_len + 1;
 }
 
-uint64_t decode_varint(const uint8_t *buf, uint8_t *skip_bytes) {
+uint64_t decode_varint(const uint8_t *buf, uint8_t *skip_bytes, uint8_t max_len) {
 	uint64_t result = 0;
 	uint64_t val;
 	uint8_t idx = 0;
 
-	do {
+	while(idx < max_len)
+	{
 		val = buf[idx] & 0x7f;
 		result |= (val << (idx*7));
-		idx++;
-	} while (buf[idx-1] & 0x80);
 
-	(*skip_bytes) = idx;
+		// no more bytes
+		if(!(buf[idx] & 0x80)) break;
+
+		idx++;
+	}
+
+	(*skip_bytes) = idx+1;
 	return result;
 }
 
-size_t base58_encode(char *out, const void *data, size_t data_len) {
+uint8_t base58_encode(char *out, const void *data, uint8_t data_len) {
 	unsigned char tmp[164];
 	unsigned char buffer[164];
 	unsigned char j;
@@ -228,8 +233,8 @@ size_t base58_encode(char *out, const void *data, size_t data_len) {
 	return data_len;
 }
 
-size_t check_sum(char *out, const void *data, size_t data_len) {
-	const size_t len = 4;
+uint8_t check_sum(char *out, const void *data, uint8_t data_len) {
+	const uint8_t len = 4;
 	hycon_hash_t hash;
 
 	blake2b(hash, sizeof(hycon_hash_t), data, 20, &G_blake2b_state, 0);

@@ -60,13 +60,13 @@ uint32_t set_result_public_key();
 /* ---                            Others                                 --- */
 /* ------------------------------------------------------------------------- */
 
-bool decode_tx(const uint8_t *data, size_t data_len, hycon_tx *tx_content);
-size_t bin_addr_to_hycon_address(const uint8_t addr[21], char* out);
+bool decode_tx(const uint8_t *data, uint8_t data_len, hycon_tx *tx_content);
+uint8_t bin_addr_to_hycon_address(const uint8_t addr[21], char* out);
 void coin_amount_to_displayable_chars(uint64_t number, char *out);
 
-uint64_t decode_varint(const uint8_t *buf, uint8_t *skip_bytes);
-size_t base58_encode(char *out, const void *data, size_t data_len);
-size_t check_sum(char *out, const void *data, size_t data_len);
+uint64_t decode_varint(const uint8_t *buf, uint8_t *skip_bytes, uint8_t max_len);
+uint8_t base58_encode(char *out, const void *data, uint8_t data_len);
+uint8_t check_sum(char *out, const void *data, uint8_t data_len);
 uint8_t min(uint8_t a, uint8_t b);
 
 #endif 	// HYCON_API_H

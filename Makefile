@@ -27,7 +27,7 @@ COINID = 1397
 
 APPVERSION_M = 0
 APPVERSION_N = 2
-APPVERSION_P = 0
+APPVERSION_P = 1
 
 APPVERSION=$(APPVERSION_M).$(APPVERSION_N).$(APPVERSION_P)
 APP_LOAD_PARAMS = --path "44'/$(COINID)'" --appFlags 0x40 --curve secp256k1 --apdu $(COMMON_LOAD_PARAMS)
@@ -125,7 +125,7 @@ dep/%.d: %.c Makefile
 endif
 
 TEST_LDFLAGS = -O3 -Os -w
-TEST_LDLIBS = -lgcc -lc -lcheck -pthread -lcheck_pic -lrt -lm
+TEST_LDLIBS = -lgcc -lc -lcheck -pthread -lcheck_pic -lrt -lm -lsubunit
 TEST_LD = gcc
 TEST_SOURCE_PATH = tests
 TEST_COMMON_SOURCES = blake2b/blake2b-ref.c src/hycon_helpers.c src/ram_variables.c

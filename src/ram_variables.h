@@ -22,6 +22,7 @@
 
 #ifndef UNIT_TEST
 #include "os_io_seproxyhal.h"
+#include "os.h"
 #endif
 
 #include "hycon_types.h"
@@ -31,7 +32,13 @@
 /* ------------------------------------------------------------------------- */
 
 #ifndef UNIT_TEST
-extern ux_state_t ux;	// don't change (used for UX_ functions)
+#ifdef TARGET_NANOX
+#include "ux.h"
+extern ux_state_t G_ux;
+extern bolos_ux_params_t G_ux_params;
+#else // TARGET_NANOX
+extern ux_state_t ux;
+#endif // TARGET_NANOX
 #endif
 
 extern unsigned int ux_step;

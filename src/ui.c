@@ -21,18 +21,6 @@
 #include "ram_variables.h"
 #include "hycon_api.h"
 
-void ui_idle(void) {
-	ux_step = 0;
-	ux_step_count = 0;
-	G_ui_state = UI_IDLE;
-
-#if defined(TARGET_BLUE)
-	UX_DISPLAY(ui_idle_blue, NULL);
-#elif defined(TARGET_NANOS)
-	UX_MENU_DISPLAY(0, menu_main, NULL);
-#endif // TARGET_ID
-}
-
 /* ------------------------------------------------------------------------- */
 /* ---                           MENU PREPROS                            --- */
 /* ------------------------------------------------------------------------- */
@@ -1592,3 +1580,151 @@ const char *const ui_approval_blue_details_name[][5] = {
 };
 bagl_element_t tmp_element;
 #endif // TARGET_BLUE
+
+
+
+
+#if defined(TARGET_NANOX)
+
+//////////////////////////////////////////////////////////////////////
+UX_STEP_NOCB(
+    ux_idle_flow_1_step, 
+    pnn, 
+    {
+	  &C_icon_hycon,
+      "Application",
+      "is ready",
+    });
+UX_STEP_NOCB(
+    ux_idle_flow_3_step, 
+    bn, 
+    {
+      "Version",
+      APPVERSION,
+    });
+UX_STEP_VALID(
+    ux_idle_flow_4_step,
+    pb,
+    os_sched_exit(-1),
+    {
+      &C_icon_dashboard_x,
+      "Quit",
+    });
+UX_FLOW(ux_idle_flow,
+  &ux_idle_flow_1_step,
+  &ux_idle_flow_3_step,
+  &ux_idle_flow_4_step
+);
+
+//////////////////////////////////////////////////////////////////////
+
+UX_STEP_NOCB(ux_confirm_full_flow_1_step, 
+    pnn, 
+    {
+      &C_icon_eye,
+      "Review",
+      "transaction",
+    });
+UX_STEP_NOCB(
+    ux_confirm_full_flow_2_step, 
+    bnnn_paging, 
+    {
+      .title = "Amount",
+      .text = G_ram.ui_amount
+    });
+UX_STEP_NOCB(
+    ux_confirm_full_flow_3_step, 
+    bnnn_paging, 
+    {
+      .title = "Address",
+      .text = G_ram.ui_full_address,
+    });
+UX_STEP_NOCB(
+    ux_confirm_full_flow_4_step, 
+    bnnn_paging, 
+    {
+      .title = "Fees",
+      .text = G_ram.ui_fee,
+    });
+UX_STEP_VALID(
+    ux_confirm_full_flow_5_step, 
+    pbb, 
+    io_seproxyhal_touch_tx_ok(NULL),
+    {
+      &C_icon_validate_14,
+      "Accept",
+      "and send",
+    });
+UX_STEP_VALID(
+    ux_confirm_full_flow_6_step, 
+    pb, 
+    io_seproxyhal_touch_tx_cancel(NULL),
+    {
+      &C_icon_crossmark,
+      "Reject",
+    });
+// confirm_full: confirm transaction / Amount: fullAmount / Address: fullAddress / Fees: feesAmount
+UX_FLOW(ux_confirm_full_flow,
+  &ux_confirm_full_flow_1_step,
+  &ux_confirm_full_flow_2_step,
+  &ux_confirm_full_flow_3_step,
+  &ux_confirm_full_flow_4_step,
+  &ux_confirm_full_flow_5_step,
+  &ux_confirm_full_flow_6_step
+);
+
+//////////////////////////////////////////////////////////////////////
+
+UX_STEP_NOCB(
+    ux_display_public_flow_5_step, 
+    bnnn_paging, 
+    {
+      .title = "Address",
+      .text = G_ram.ui_full_address,
+    });
+UX_STEP_VALID(
+    ux_display_public_flow_6_step, 
+    pb, 
+    io_seproxyhal_touch_address_ok(NULL),
+    {
+      &C_icon_validate_14,
+      "Approve",
+    });
+UX_STEP_VALID(
+    ux_display_public_flow_7_step, 
+    pb, 
+    io_seproxyhal_touch_address_cancel(NULL),
+    {
+      &C_icon_crossmark,
+      "Reject",
+    });
+
+
+UX_FLOW(ux_display_public_flow,
+  &ux_display_public_flow_5_step,
+  &ux_display_public_flow_6_step,
+  &ux_display_public_flow_7_step
+);
+
+#endif // NANOX
+
+
+// UI entry point
+
+void ui_idle(void) {
+	ux_step = 0;
+	ux_step_count = 0;
+	G_ui_state = UI_IDLE;
+
+#if defined(TARGET_BLUE)
+	UX_DISPLAY(ui_idle_blue, NULL);
+#elif defined(TARGET_NANOS)
+	UX_MENU_DISPLAY(0, menu_main, NULL);
+#elif defined(TARGET_NANOX)
+	 // reserve a display stack slot if none yet
+    if(G_ux.stack_count == 0) {
+        ux_stack_push();
+    }
+    ux_flow_init(0, ux_idle_flow, NULL);
+#endif // TARGET_ID
+}

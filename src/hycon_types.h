@@ -56,5 +56,5 @@ typedef struct ram_s {
 	volatile char ui_address_summary[32];
 } ram;
 
-typedef void (*callback_t)(void);
+//typedef void (*callback_t)(void);
 #endif // HYCON_TYPES_H

@@ -56,8 +56,13 @@ void app_main() {
 					THROW(0x6982);
 				}
 
+				PRINTF("New APDU received:\n%.*H\n", rx, G_io_apdu_buffer);
+
 				handleApdu(&flags, &tx);
 			}
+			CATCH(EXCEPTION_IO_RESET) {
+            	THROW(EXCEPTION_IO_RESET);
+        	}
 			CATCH_OTHER(e) {
 				switch (e & 0xF000) {
 				case 0x6000:
@@ -195,30 +200,47 @@ __attribute__((section(".boot"))) int main(void) {
 
 	os_memset(&G_ram, 0, sizeof(G_ram));
 
+	// ensure exception will work as planned
+	os_boot();
+
 	for (;;) {
 		UX_INIT();
-
-		// ensure exception will work as planned
-		os_boot();
 
 		BEGIN_TRY {
 			TRY {
 				io_seproxyhal_init();
 
-				USB_power(0);
-				USB_power(1);
 
-				// show idle screen.
-				ui_idle();
+#ifdef TARGET_NANOX
+                // grab the current plane mode setting
+                G_io_app.plane_mode = os_setting_get(OS_SETTING_PLANEMODE, NULL, 0);
+#endif // TARGET_NANOX
+
+                USB_power(0);
+                USB_power(1);
+
+                ui_idle();
+
+#ifdef HAVE_BLE
+                BLE_power(0, NULL);
+                BLE_power(1, "Nano X");
+#endif // HAVE_BLE
+
 
 				// run main event loop.
 				app_main();
 			}
-			CATCH_OTHER(e) {
-				break;
-			}
-			FINALLY {
-			}
+			CATCH(EXCEPTION_IO_RESET) {
+                // reset IO and UX
+                CLOSE_TRY;
+                continue;
+            }
+            CATCH_ALL {
+                CLOSE_TRY;
+                break;
+            }
+            FINALLY {
+            }
 		}
 		END_TRY;
 	}

@@ -20,6 +20,7 @@
 #define UI_H
 
 #include "os_io_seproxyhal.h"
+#include "ux.h"
 #include "hycon_types.h"
 
 #if defined(TARGET_BLUE)

@@ -23,6 +23,7 @@
 #ifndef UNIT_TEST
 #include "os_io_seproxyhal.h"
 #include "os.h"
+#include "ux.h"
 #endif
 
 #include "hycon_types.h"

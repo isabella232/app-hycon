@@ -24,7 +24,7 @@
 /* ------------------------------------------------------------------------- */
 
 #ifndef UNIT_TEST
-#ifdef TARGET_NANOX
+#if defined(TARGET_NANOX) || defined(TARGET_NANOS2)
 #include "ux.h"
 ux_state_t G_ux;
 bolos_ux_params_t G_ux_params;

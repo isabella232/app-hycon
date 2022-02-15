@@ -1584,20 +1584,20 @@ bagl_element_t tmp_element;
 
 
 
-#if defined(TARGET_NANOX)
+#if defined(TARGET_NANOX) || defined(TARGET_NANOS2)
 
 //////////////////////////////////////////////////////////////////////
 UX_STEP_NOCB(
-    ux_idle_flow_1_step, 
-    pnn, 
+    ux_idle_flow_1_step,
+    pnn,
     {
 	  &C_icon_hycon,
       "Application",
       "is ready",
     });
 UX_STEP_NOCB(
-    ux_idle_flow_3_step, 
-    bn, 
+    ux_idle_flow_3_step,
+    bn,
     {
       "Version",
       APPVERSION,
@@ -1720,7 +1720,7 @@ void ui_idle(void) {
 	UX_DISPLAY(ui_idle_blue, NULL);
 #elif defined(TARGET_NANOS)
 	UX_MENU_DISPLAY(0, menu_main, NULL);
-#elif defined(TARGET_NANOX)
+#elif defined(TARGET_NANOX) || defined(TARGET_NANOS2)
 	 // reserve a display stack slot if none yet
     if(G_ux.stack_count == 0) {
         ux_stack_push();

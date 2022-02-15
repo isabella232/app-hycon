@@ -72,12 +72,12 @@ extern const bagl_element_t ui_idle_blue[8];
 extern const bagl_element_t ui_details_blue[16];
 #endif // TARGET_BLUE
 
-#if defined(TARGET_NANOX)
+#if defined(TARGET_NANOX) || defined(TARGET_NANOS2)
 extern const ux_flow_step_t* const ux_idle_flow[];
 extern const ux_flow_step_t* const ux_confirm_full_flow[];
 extern const ux_flow_step_t* const ux_display_public_flow[];
 
-#endif // TARGET_BLUE
+#endif // TARGET_NANOX
 
 /* ------------------------------------------------------------------------- */
 /* ---                           MENU PREPROS                            --- */

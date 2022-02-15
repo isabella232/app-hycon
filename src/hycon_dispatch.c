@@ -151,7 +151,7 @@ void handle_sign(uint8_t p1, uint8_t p2, uint8_t *data_buffer,
 		ux_step = 0;
 		ux_step_count = 4;
 		UX_DISPLAY(ui_approval_nanos, ui_approval_prepro);
-#elif defined(TARGET_NANOX)
+#elif defined(TARGET_NANOX) || defined(TARGET_NANOS2)
 		ux_flow_init(0, ux_confirm_full_flow, NULL);
 #endif // #if TARGET_ID
 
@@ -205,7 +205,7 @@ void handle_get_public_key(uint8_t p1, uint8_t p2, uint8_t *data_buffer,
 		ux_step = 0;
 		ux_step_count = 2;
 		UX_DISPLAY(ui_address_nanos, ui_address_prepro);
-#elif defined(TARGET_NANOX)
+#elif defined(TARGET_NANOX) || defined(TARGET_NANOS2)
 		ux_flow_init(0, ux_display_public_flow, NULL);
 #endif // #if TARGET_ID
 
